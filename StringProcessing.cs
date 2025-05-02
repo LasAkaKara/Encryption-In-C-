@@ -6,18 +6,17 @@ using System.Collections.Generic;
 
 namespace COMP1551
 {
-    /// <summary>
+    
     /// Defines the encryption methods available
-    /// </summary>
     public enum EncryptionMethod
     {
         Caesar,
         AES
     }
 
-    /// <summary>
+    
     /// Handles string processing operations including encoding, encryption, and sorting
-    /// </summary>
+    
     public class StringProcessing
     {
         private string inputString;
@@ -28,101 +27,96 @@ namespace COMP1551
         private EncryptionMethod lastEncryptionMethod;
         private string lastAesKey;
 
-        /// <summary>
+        
         /// Gets or sets the input string
-        /// </summary>
         public string InputString
         {
             get => inputString;
             set => inputString = value;
         }
 
-        /// <summary>
+        
         /// Gets or sets the input number for Caesar cipher
-        /// </summary>
+        
         public int InputN
         {
             get => inputN;
             set => inputN = value;
         }
 
-        /// <summary>
+        
         /// Gets or sets the input key for AES encryption
-        /// </summary>
+        
         public string InputAesKey
         {
             get => inputAesKey;
             set => inputAesKey = value;
         }
 
-        /// <summary>
+        
         /// Gets the last used encryption method
-        /// </summary>
+        
         public EncryptionMethod LastEncryptionMethod => lastEncryptionMethod;
 
-        /// <summary>
+        
         /// Gets the last used AES key
-        /// </summary>
+        
         public string LastAesKey => lastAesKey;
 
-        /// <summary>
+        
         /// Sets input values for Caesar cipher
-        /// </summary>
+        
         public void SetInput(string inputString, int inputN)
         {
             this.inputString = inputString;
             this.inputN = inputN;
         }
 
-        /// <summary>
+        
         /// Sets input values for AES encryption
-        /// </summary>
+        
         public void SetAesInput(string inputString, string inputAesKey)
         {
             this.inputString = inputString;
             this.inputAesKey = inputAesKey;
         }
 
-        /// <summary>
+        
         /// Validates the input string and number for Caesar cipher
-        /// </summary>
-        /// <returns>Bit flags indicating validation status</returns>
-        public int ValidateInput()
+        /// <exception cref="ArgumentException">Thrown when validation fails</exception>
+        public void ValidateInput()
         {
-            int output = 7; // 111 in binary: assume all conditions valid
+            if (string.IsNullOrEmpty(inputString))
+                throw new ArgumentException("Input string cannot be null or empty");
 
-            // Bit 1: Validate string length [1; 40]
-            output = output & ((inputString.Length >= 1 && inputString.Length <= 40) ? 7 : 5);
+            if (inputString.Length < 1 || inputString.Length > 40)
+                throw new ArgumentException("Input string length must be between 1 and 40 characters");
 
-            // Bit 0: Validate all characters A-Z
-            output = output & (inputString.All(c => c >= 'A' && c <= 'Z') ? 7 : 6);
+            if (!inputString.All(c => c >= 'A' && c <= 'Z'))
+                throw new ArgumentException("Input string must contain only uppercase letters A-Z");
 
-            // Bit 2: Validate inputN in [-25; 25]
-            output = output & ((inputN >= -25 && inputN <= 25) ? 7 : 3);
-
-            return output;
+            if (inputN < -25 || inputN > 25)
+                throw new ArgumentException("Input number must be between -25 and 25");
         }
 
-        /// <summary>
+        
         /// Validates the input string for AES encryption
-        /// </summary>
-        /// <returns>Bit flags indicating validation status</returns>
-        public int ValidateAesInput()
+        /// <exception cref="ArgumentException">Thrown when validation fails</exception>
+        public void ValidateAesInput()
         {
-            int output = 3; // 011 in binary: assume string conditions valid
+            if (string.IsNullOrEmpty(inputString))
+                throw new ArgumentException("Input string cannot be null or empty");
 
-            // Bit 1: Validate string length [1; 40]
-            output = output & ((inputString.Length >= 1 && inputString.Length <= 40) ? 3 : 1);
+            if (inputString.Length < 1 || inputString.Length > 40)
+                throw new ArgumentException("Input string length must be between 1 and 40 characters");
 
-            // Bit 0: Validate all characters A-Z
-            output = output & (inputString.All(c => c >= 'A' && c <= 'Z') ? 3 : 2);
-
-            return output;
+            if (!inputString.All(c => c >= 'A' && c <= 'Z'))
+                throw new ArgumentException("Input string must contain only uppercase letters A-Z");
         }
 
-        /// <summary>
+        
         /// Encrypts the input string using Caesar cipher
-        /// </summary>
+        
         public string EncryptCaesar()
         {
             lastEncryptionMethod = EncryptionMethod.Caesar;
@@ -130,9 +124,9 @@ namespace COMP1551
             return encryptedText;
         }
 
-        /// <summary>
+        
         /// Encrypts the input string using AES with PBKDF2 key derivation
-        /// </summary>
+        
         public string EncryptAES()
         {
             try
@@ -174,9 +168,9 @@ namespace COMP1551
             }
         }
 
-        /// <summary>
+        
         /// Decrypts the encrypted string based on the last used encryption method
-        /// </summary>
+        
         public string Decrypt()
         {
             if (string.IsNullOrEmpty(encryptedText))
@@ -193,9 +187,9 @@ namespace COMP1551
             }
         }
 
-        /// <summary>
+        
         /// Decrypts the encrypted string using a provided AES key
-        /// </summary>
+        
         public string DecryptWithKey(string encryptedText, string key)
         {
             try
@@ -276,9 +270,9 @@ namespace COMP1551
             }
         }
 
-        /// <summary>
+        
         /// Encodes the input string using the Caesar cipher
-        /// </summary>
+        
         public string EncodeString()
         {
             string result = "";
@@ -290,34 +284,34 @@ namespace COMP1551
             return result;
         }
 
-        /// <summary>
+        
         /// Gets ASCII values of characters in the input string
-        /// </summary>
+        
         public int[] GetAsciiValues(string input)
         {
             return input.Select(c => (int)c).ToArray();
         }
 
-        /// <summary>
+        
         /// Gets ASCII values before encoding
-        /// </summary>
+        
         public int[] GetAsciiValuesBeforeEncoding()
         {
             string decryptedText = Decrypt();
             return decryptedText != null ? GetAsciiValues(decryptedText) : GetAsciiValues(inputString);
         }
 
-        /// <summary>
+        
         /// Gets ASCII values after encoding
-        /// </summary>
+        
         public int[] GetAsciiValuesAfterEncoding()
         {
             return GetAsciiValues(encryptedText ?? EncodeString());
         }
 
-        /// <summary>
+        
         /// Sorts the input string alphabetically using QuickSort
-        /// </summary>
+        
         public string SortString()
         {
             char[] chars = inputString.ToCharArray();
